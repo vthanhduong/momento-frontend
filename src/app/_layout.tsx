@@ -35,7 +35,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
+    <ThemeProvider value={DarkTheme}>
       <SafeAreaView className="flex-1">
         <ThemedLayout />
       </SafeAreaView>
@@ -45,14 +45,12 @@ export default function RootLayout() {
 
 function ThemedLayout() {
   return (
-    <View className="flex-1">
+    <View className="h-full bg-black">
       <Header />
       <View className="flex-1">
-        <StatusBar style="auto" />
-
-        <Stack>
+        <StatusBar style="light" />
+        <Stack initialRouteName="index">
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
         </Stack>
       </View>
       <Footer />
