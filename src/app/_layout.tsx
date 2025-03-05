@@ -11,12 +11,15 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@hooks/useColorScheme";
-
+import { View } from "react-native";
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import { SafeAreaView } from "react-native-safe-area-context";
+import "tailwindcss/tailwind.css";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("@assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -32,12 +35,27 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+    <ThemeProvider value={DefaultTheme}>
+      <SafeAreaView className="flex-1">
+        <ThemedLayout />
+      </SafeAreaView>
     </ThemeProvider>
+  );
+}
+
+function ThemedLayout() {
+  return (
+    <View className="flex-1">
+      <Header />
+      <View className="flex-1">
+        <StatusBar style="auto" />
+
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </View>
+      <Footer />
+    </View>
   );
 }
