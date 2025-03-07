@@ -16,9 +16,9 @@ const HomeScreen = () => {
     }
   }, [permission]);
 
-  if (authData.token == '') {
+  if (authData.token == "") {
     console.log("login state", authData.token);
-    return <Redirect href={'/sign-in'} />
+    return <Redirect href={"/sign-in"} />;
   }
 
   return (

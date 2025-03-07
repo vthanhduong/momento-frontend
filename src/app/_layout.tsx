@@ -56,7 +56,7 @@ function ThemedLayout() {
       {!isAuthPage && <Header />}
       <View className="flex-1">
         <StatusBar style="auto" />
-        <Stack initialRouteName="index">
+        <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
