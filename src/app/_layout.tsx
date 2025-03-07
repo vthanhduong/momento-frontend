@@ -25,10 +25,6 @@ export default function RootLayout() {
     SpaceMono: require("@assets/fonts/SpaceMono-Regular.ttf"),
   });
 
- 
-
-
-
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -40,8 +36,8 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
-      <SafeAreaView className="flex-1">
+    <ThemeProvider value={DarkTheme}>
+      <SafeAreaView className="h-full">
         <AuthProvider>
           <ThemedLayout />
         </AuthProvider>
@@ -54,13 +50,13 @@ function ThemedLayout() {
   const pathname = usePathname();
   const authpath = ["/sign-in", "/sign-up"];
   const isAuthPage = authpath.includes(pathname);
-  console.log(pathname)
+  console.log(pathname);
   return (
-    <View className="flex-1">
+    <View className="flex flex-col h-full ">
       {!isAuthPage && <Header />}
       <View className="flex-1">
         <StatusBar style="auto" />
-        <Stack>
+        <Stack initialRouteName="index">
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
