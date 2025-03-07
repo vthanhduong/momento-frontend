@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -16,6 +16,7 @@ import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "tailwindcss/tailwind.css";
+import AuthProvider from "@/providers/AuthProvider";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -37,23 +38,31 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={DarkTheme}>
       <SafeAreaView className="flex-1">
-        <ThemedLayout />
+        <AuthProvider>
+          <ThemedLayout />
+        </AuthProvider>
       </SafeAreaView>
     </ThemeProvider>
   );
 }
 
 function ThemedLayout() {
+  const pathname = usePathname();
+  const authpath = ["/sign-in", "/sign-up"];
+  const isAuthPage = authpath.includes(pathname);
+  console.log(pathname);
   return (
-    <View className="h-full bg-black">
-      <Header />
+    <View className="flex-1">
+      {!isAuthPage && <Header />}
       <View className="flex-1">
-        <StatusBar style="light" />
+        <StatusBar style="auto" />
         <Stack initialRouteName="index">
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
         </Stack>
       </View>
-      <Footer />
+      {!isAuthPage && <Footer />}
     </View>
   );
 }
