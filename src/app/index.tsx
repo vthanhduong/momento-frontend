@@ -6,9 +6,8 @@ import { useEffect } from "react";
 import { View, Text } from "react-native";
 
 const HomeScreen = () => {
-  const { token } = useAuth();
+  const { authData } = useAuth();
 
-  //Quyền truy cập camera
   const [permission, requestPermission] = useCameraPermissions();
 
   useEffect(() => {
@@ -17,8 +16,9 @@ const HomeScreen = () => {
     }
   }, [permission]);
 
-  if (token == "") {
-    return <Redirect href={"/sign-in"} />;
+  if (authData.token == '') {
+    console.log("login state", authData.token);
+    return <Redirect href={'/sign-in'} />
   }
 
   return (
