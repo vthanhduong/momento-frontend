@@ -37,7 +37,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DarkTheme}>
-      <SafeAreaView className="flex-1">
+      <SafeAreaView className="h-full">
         <AuthProvider>
           <ThemedLayout />
         </AuthProvider>
@@ -52,7 +52,7 @@ function ThemedLayout() {
   const isAuthPage = authpath.includes(pathname);
   console.log(pathname);
   return (
-    <View className="flex-1">
+    <View className="flex flex-col h-full ">
       {!isAuthPage && <Header />}
       <View className="flex-1">
         <StatusBar style="auto" />

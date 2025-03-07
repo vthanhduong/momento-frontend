@@ -6,107 +6,92 @@ import {
   StyleSheet,
   Alert,
   Image,
+  Button,
+  Dimensions,
 } from "react-native";
-import { Camera, useCameraDevices } from "react-native-vision-camera";
+import {
+  CameraView,
+  CameraType,
+  useCameraPermissions,
+  FlashMode,
+  CameraMode,
+} from "expo-camera";
+import Icon from "react-native-vector-icons/FontAwesome6";
+
 export default function CameraComponent() {
-  const [hasPermission, setHasPermission] = useState(false);
-  const [cameraPosition, setCameraPosition] = useState<"front" | "back">(
-    "front"
-  );
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [flash, setFlash] = useState<"off" | "on">("off");
-  const cameraRef = useRef<Camera>(null);
-  const devices = useCameraDevices();
-  const device = devices.find((device) => device.position === cameraPosition);
+  const [permission, requestPermission] = useCameraPermissions();
+  const screenWidth = Dimensions.get("window").width; // Lấy chiều rộng màn hình
+  const squareSize = screenWidth;
+  const [facing, setFacing] = useState<CameraType>("front");
+  const [flash, setFlash] = useState<FlashMode>("off");
+  const [mode, setMode] = useState<CameraMode>("picture");
+  const cameraRef = useRef<CameraView>(null);
+  const [picture, setPicture] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const status = await Camera.requestCameraPermission();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
-  // Nếu chưa cấp quyền, hiển thị thông báo
-  if (!hasPermission) {
-    return <Text>Yêu cầu quyền truy cập camera...</Text>;
-  }
+  const toggleFacing = () => {
+    setFacing((current) => (current === "front" ? "back" : "front"));
+  };
 
-  // Nếu không tìm thấy thiết bị camera
-  if (!device) {
-    return <Text>Không tìm thấy camera phù hợp</Text>;
-  }
+  const toggleFlash = () => {
+    setFlash((current) => (current === "off" ? "on" : "off"));
+  };
 
-  const takePhoto = async () => {
+  const toggleMode = () => {
+    setMode((current) => (current === "picture" ? "video" : "picture"));
+  };
+
+  const takePicture = async () => {
     if (cameraRef.current) {
-      const photo = await cameraRef.current.takePhoto();
-      setPhotoUri(`file://${photo.path}`);
+      const photo = await cameraRef.current.takePictureAsync();
+      if (photo) {
+        setPicture(photo.uri);
+      }
     }
   };
 
-  // Đổi camera trước/sau
-  const toggleCamera = () => {
-    setCameraPosition((prev) => (prev === "back" ? "front" : "back"));
-  };
-
-  // Bật/tắt Flash
-  const toggleFlash = () => {
-    setFlash((prev) => (prev === "off" ? "on" : "off"));
+  const cancelPicture = () => {
+    setPicture(null);
   };
 
   return (
-    <View>
-      <Camera
-        ref={cameraRef}
-        device={device}
-        isActive={true}
-        photo={true}
-        torch={flash}
-      />
-      {/* Hiển thị ảnh chụp */}
-      {photoUri && (
-        <Image
-          source={{ uri: photoUri }}
-          style={{
-            position: "absolute",
-            top: 50,
-            left: 20,
-            width: 100,
-            height: 100,
-            borderRadius: 10,
-          }}
-        />
-      )}
-
-      {/* Nút điều khiển */}
-      <View
-        style={{
-          position: "absolute",
-          bottom: 50,
-          width: "100%",
-          alignItems: "center",
-        }}
-      >
-        {/* Nút chụp ảnh */}
-        <TouchableOpacity
-          onPress={takePhoto}
-          style={{ backgroundColor: "white", padding: 15, borderRadius: 50 }}
-        >
-          <Text>📷</Text>
+    <View className="flex-1">
+      <View className="flex-1 ">
+        {!picture ? (
+          <CameraView
+            style={{ width: squareSize, height: squareSize }}
+            className="rounded-[40px] overflow-hidden"
+            facing={facing}
+            flash={flash}
+            mode={mode}
+            ratio="1:1"
+            pictureSize={`${squareSize}x${squareSize}`}
+            ref={cameraRef}
+            mirror={true}
+          ></CameraView>
+        ) : (
+          <Image
+            source={{ uri: picture }}
+            style={{ width: squareSize, height: squareSize }}
+            className="rounded-[40px]" // Bo tròn 40px
+          />
+        )}
+      </View>
+      <View className="w-full flex-row justify-between items-center px-14 ">
+        <TouchableOpacity onPress={toggleFlash}>
+          <Icon
+            name="bolt"
+            size={35}
+            color={flash === "on" ? "yellow" : "white"}
+          />
         </TouchableOpacity>
-
-        {/* Nút chuyển đổi camera */}
         <TouchableOpacity
-          onPress={toggleCamera}
-          style={{ position: "absolute", left: 50, padding: 10 }}
+          className="bg-primary rounded-full p-1"
+          onPress={takePicture}
         >
-          <Text>🔄</Text>
+          <Text className="w-20 h-20 bg-white rounded-full border-[4px] border-black" />
         </TouchableOpacity>
-
-        {/* Nút bật/tắt flash */}
-        <TouchableOpacity
-          onPress={toggleFlash}
-          style={{ position: "absolute", right: 50, padding: 10 }}
-        >
-          <Text>{flash === "off" ? "⚡" : "💡"}</Text>
+        <TouchableOpacity onPress={toggleFacing}>
+          <Icon name="rotate" size={35} color="white" />
         </TouchableOpacity>
       </View>
     </View>

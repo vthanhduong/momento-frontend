@@ -44,11 +44,11 @@
         }
       ],
       [
-        "react-native-vision-camera",
+        "expo-camera",
         {
-          "cameraPermissionText": "Momento needs access to your Camera.",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "Momento needs access to your Microphone."
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
         }
       ]
     ],
