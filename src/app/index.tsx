@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { View, Text } from "react-native";
 
 const HomeScreen = () => {
-  const { authData } = useAuth();
+  // const { authData } = useAuth();
 
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -16,13 +16,13 @@ const HomeScreen = () => {
     }
   }, [permission]);
 
-  if (authData.token == "") {
-    console.log("login state", authData.token);
-    return <Redirect href={"/sign-in"} />;
-  }
+  // if (authData.token == "") {
+  //   console.log("login state", authData.token);
+  //   return <Redirect href={"/sign-in"} />;
+  // }
 
   return (
-    <View className="h-full py-4">
+    <View className="flex-1 py-4">
       <CameraComponent />
     </View>
   );

@@ -17,6 +17,8 @@ import {
   CameraMode,
 } from "expo-camera";
 import Icon from "react-native-vector-icons/FontAwesome6";
+import { Link } from "expo-router";
+import LastPicture from "../photo/LastPicture";
 
 export default function CameraComponent() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -54,8 +56,8 @@ export default function CameraComponent() {
   };
 
   return (
-    <View className="flex-1">
-      <View className="flex-1 ">
+    <View className="flex-col space-y-10">
+      <View>
         {!picture ? (
           <CameraView
             style={{ width: squareSize, height: squareSize }}
@@ -76,7 +78,7 @@ export default function CameraComponent() {
           />
         )}
       </View>
-      <View className="w-full flex-row justify-between items-center px-14 ">
+      <View className=" w-full flex-row justify-between items-center px-14 ">
         <TouchableOpacity onPress={toggleFlash}>
           <Icon
             name="bolt"
@@ -93,6 +95,9 @@ export default function CameraComponent() {
         <TouchableOpacity onPress={toggleFacing}>
           <Icon name="rotate" size={35} color="white" />
         </TouchableOpacity>
+      </View>
+      <View className="w-full flex-row justify-center items-center">
+        <LastPicture />
       </View>
     </View>
   );

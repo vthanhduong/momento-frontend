@@ -1,3 +1,6 @@
+import "react-native-reanimated";
+import "react-native-gesture-handler";
+import "tailwindcss/tailwind.css";
 import {
   DarkTheme,
   DefaultTheme,
@@ -8,15 +11,14 @@ import { Stack, usePathname, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import "react-native-reanimated";
 
 import { useColorScheme } from "@hooks/useColorScheme";
 import { View } from "react-native";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 import { SafeAreaView } from "react-native-safe-area-context";
-import "tailwindcss/tailwind.css";
 import AuthProvider from "@/providers/AuthProvider";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -36,13 +38,15 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={DarkTheme}>
-      <SafeAreaView className="h-full">
-        <AuthProvider>
-          <ThemedLayout />
-        </AuthProvider>
-      </SafeAreaView>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={DarkTheme}>
+        <SafeAreaView className="h-full">
+          <AuthProvider>
+            <ThemedLayout />
+          </AuthProvider>
+        </SafeAreaView>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -53,16 +57,17 @@ function ThemedLayout() {
   console.log(pathname);
   return (
     <View className="flex flex-col h-full ">
-      {!isAuthPage && <Header />}
       <View className="flex-1">
         <StatusBar style="auto" />
         <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="index"
+            options={{ headerShown: true, header: () => <Header /> }}
+          />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </View>
-      {!isAuthPage && <Footer />}
     </View>
   );
 }

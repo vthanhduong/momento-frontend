@@ -12,7 +12,7 @@ const Header = () => {
             uri: "https://i.pinimg.com/236x/4e/f3/2b/4ef32b0950f39d073efc823c569a0815.jpg",
           }}
         />
-        <View className="w-fit max-h-12 items-center justify-center bg-opacity-80 bg-neutral-600 rounded-full flex flex-row gap-1 p-2">
+        <View className="w-fit max-h-12 items-center justify-center bg-opacity-80 bg-neutral-600 rounded-full flex flex-row space-x-1 p-2">
           <Icon name="user-group" size={16} color="white" />
           <Text
             numberOfLines={1}
