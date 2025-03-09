@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import React, { useEffect, useReducer } from "react";
 import { FlatList, Image, Text, View } from "react-native";
-
+import Carousel from "react-native-reanimated-carousel";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 // import Carousel from "react-native-reanimated-carousel";
 const LastPicture = () => {
@@ -64,15 +64,16 @@ const LastPicture = () => {
   return (
     <Link href={"/(user)/(galleries)/index"}>
       <View className="h-fit flex-col justify-center items-center">
-        <View className="flex-row justify-center items-center space-x-2">
-          {/* <Carousel
+        <View className=" flex-row flex-wrap justify-center items-center space-x-2">
+          <Carousel
             loop
             width={30}
+            height={30}
             autoPlay={true}
             autoPlayInterval={3000}
             data={data}
             renderItem={({ item }) => (
-              <View className="items-center">
+              <View>
                 <Image
                   source={{ uri: item.src }}
                   style={{ width: 30, height: 30 }}
@@ -80,8 +81,9 @@ const LastPicture = () => {
                 />
               </View>
             )}
-          /> */}
-          <Text className="text-center text-white text-lg font-semibold ">
+          />
+
+          <Text className="text-center text-white text-lg font-semibold">
             Lịch sử
           </Text>
         </View>

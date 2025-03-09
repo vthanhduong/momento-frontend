@@ -17,10 +17,11 @@ import {
   CameraMode,
 } from "expo-camera";
 import Icon from "react-native-vector-icons/FontAwesome6";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import LastPicture from "../photo/LastPicture";
 
 export default function CameraComponent() {
+  const router = useRouter();
   const [permission, requestPermission] = useCameraPermissions();
   const screenWidth = Dimensions.get("window").width; // Lấy chiều rộng màn hình
   const squareSize = screenWidth;
@@ -46,7 +47,11 @@ export default function CameraComponent() {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
       if (photo) {
-        setPicture(photo.uri);
+        // setPicture(photo.uri);
+        router.push({
+          pathname: "/(user)/(photo)",
+          params: { photo: photo.uri },
+        });
       }
     }
   };

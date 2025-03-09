@@ -59,7 +59,7 @@ function ThemedLayout() {
     <View className="flex flex-col h-full ">
       <View className="flex-1">
         <StatusBar style="auto" />
-        <Stack>
+        <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name="index"
             options={{ headerShown: true, header: () => <Header /> }}
