@@ -1,17 +1,13 @@
-import { login } from '@/api/auth';
-import { useAuth } from '@/providers/AuthProvider';
-import { Redirect } from 'expo-router';
 import React, { useReducer } from 'react'
-import { Text, View } from 'react-native';
-import { Button, TextInput } from 'react-native-paper';
-import { useRouter } from "expo-router";
+import { Text, View, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
+import AuthButton from '@/components/auth/AuthButton';
 function SignInScreen() {
     const [localState, setLocalState] = useReducer(
         (
             state: {
                 username: string;
                 password: string;
-                loading: boolean
             },
             action: { type: string; payload: any }) => {
             switch (action.type) {
@@ -19,8 +15,6 @@ function SignInScreen() {
                     return { ...state, username: action.payload };
                 case 'SET_PASSWORD':
                     return { ...state, password: action.payload };
-                case 'SET_LOADING':
-                    return { ...state, loading: action.payload };
                 default:
                     return state;
             }
@@ -28,11 +22,8 @@ function SignInScreen() {
         {
             username: '',
             password: '',
-            loading: false
         }
     );
-    const router = useRouter();
-    const { setAuthData } = useAuth();
 
     const handleInput = (type: string, value: string) => {
         if (type == 'username') {
@@ -43,53 +34,55 @@ function SignInScreen() {
         }
     }
 
-    const handleLogin = async () => {
-        setLocalState({ type: 'SET_LOADING', payload: true });
-        setAuthData({ token: '', username: '', avatar_url: null, gmail: null, loading: true });
-
-        const payload = {
-            username: localState.username,
-            password: localState.password
-        }
-        const res = await login(payload);
-        setLocalState({ type: 'SET_LOADING', payload: false });
-        if (res?.status == 'success') {
-            console.log("okela bro", res);
-            // set token for AuthProviders
-            setAuthData({ token: res.data.token, username: '', avatar_url: null, gmail: null, loading: false });
-            router.replace("/");
-
-        }
-        else {
-            console.log("no okela bro", res);
-        }
-    }
 
     return (
-        <View className='flex-1 h-full w-full bg-white items-center gap-3 px-10'>
-            <TextInput
-                label="Username"
-                className='w-full bg-white'
-                mode='outlined'
-                activeOutlineColor='black'
-                onChangeText={(text) => handleInput('username', text)}
-            />
-            <TextInput
-                label="Password"
-                className='w-full bg-white'
-                mode='outlined'
-                activeOutlineColor='black'
-                onChangeText={(text) => handleInput('password', text)}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View className='flex-1 h-full w-full items-center justify-center gap-3 px-10'>
+                <View>
+                    <FontAwesome6Icon name='github' size={50} color={'white'} />
+                </View>
+                <View className='flex flex-row gap-3'>
+                    <View className='w-40 flex flex-row items-center justify-center bg-white rounded-lg py-2'>
+                        <FontAwesome6Icon name='google' size={30} color={'#1C6FEC'} />
+                        <Text className='text-base ml-3'>Google</Text>
+                    </View>
+                    <View className='w-40 flex flex-row items-center justify-center bg-white rounded-lg py-2'>
+                        <FontAwesome6Icon name='github' size={30} color={'#5E438F'} />
+                        <Text className='text-base ml-3'>Github</Text>
+                    </View>
 
-            />
-            <Button
-                mode='contained'
-                loading={localState.loading}
-                onPress={() => handleLogin()}
-            >
-                Sign In
-            </Button>
-        </View>
+                </View>
+                <View className='flex'>
+                    <Text className='text-lg text-gray-400'>or</Text>
+                </View>
+                <TextInput
+                    placeholder="Username"
+                    className='w-full h-16 bg-black p-3 border border-b-gray-800 text-white text-base'
+                    placeholderTextColor={'grey'}
+                    onChangeText={(text) => handleInput('username', text)}
+                    numberOfLines={1}
+                    maxLength={50}
+
+                />
+                <TextInput
+                    placeholder="Password"
+                    className='w-full h-16 bg-black p-3 border border-b-gray-800 text-white text-base'
+                    placeholderTextColor={'grey'}
+                    onChangeText={(text) => handleInput('password', text)}
+                    numberOfLines={1}
+                    maxLength={50}
+                    secureTextEntry
+                />
+                <View className='w-full flex items-end my-5'>
+                    <Text className='text-sm text-secondary'>Forgot Password?</Text>
+                </View>
+                <View className='w-full flex'>
+                    <AuthButton
+                        type='Login'
+                        authPayload={{ username: localState.username, password: localState.password }} />
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
     )
 }
 

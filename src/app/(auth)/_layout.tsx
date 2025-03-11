@@ -9,10 +9,7 @@ export default function AuthLayout() {
     return (
         <>
             <View className="flex-1">
-                <View className="flex-[0.3] bg-blue-300">
-                    <AuthHeader title={title} />
-                </View>
-                <View className="flex-[0.7] bg-green-300">
+                <View className="flex-1 bg-black">
                     <Stack screenOptions={{ headerShown: false }}>
                         <Stack.Screen name="sign-in" options={{ title: "Sign In" }} />
                         <Stack.Screen name="sign-up" options={{ title: "Sign Up" }} />
