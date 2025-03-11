@@ -1,3 +1,5 @@
+import ShareItemComponent from "@/components/list/ShareItemComponent";
+import ShareListsComponent from "@/components/list/ShareListsComponent";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { ALargeSmall, Send } from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -5,6 +7,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  FlatList,
   Image,
   Keyboard,
   Text,
@@ -31,10 +34,10 @@ const SendPhotoScreen = () => {
   const [width, setWidth] = useState(placeholder.length * 2);
   const translateY = useRef(new Animated.Value(0)).current;
 
-  const data: Array<{ id: number; src?: string; name: string }> = [
+  const data: ShareItemData[] = [
     {
       id: 0,
-      name: "Mọi người",
+      name: "Tất cả",
     },
     {
       id: 1,
@@ -62,6 +65,12 @@ const SendPhotoScreen = () => {
       name: "Meow",
     },
   ];
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const onSelectionChange = useCallback((ids: Array<string>) => {
+    setSelectedIds(ids);
+    console.log(ids);
+  }, []);
 
   useEffect(() => {
     const textLength = text.length > 0 ? text.length : placeholder.length;
@@ -136,11 +145,14 @@ const SendPhotoScreen = () => {
 
       {/* Upload,Close,Note */}
 
-      <View className="w-full flex-row justify-between items-center px-12 ">
+      <View className="w-full flex-row justify-around items-center">
         <TouchableOpacity onPress={backToCamera}>
           <Icon name="xmark" size={35} color={"white"} />
         </TouchableOpacity>
-        <TouchableOpacity className="bg-primary/75 rounded-full flex items-center p-7">
+        <TouchableOpacity
+          disabled={selectedIds.length === 0}
+          className="bg-primary/75 rounded-full flex items-center justify-between p-5"
+        >
           <Send size={35} color={"white"} />
         </TouchableOpacity>
         <TouchableOpacity>
@@ -149,6 +161,11 @@ const SendPhotoScreen = () => {
       </View>
 
       {/* User */}
+      <ShareListsComponent
+        data={data}
+        width={screenWidth}
+        onSelectionChange={onSelectionChange}
+      />
     </View>
   );
 };
