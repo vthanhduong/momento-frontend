@@ -2,14 +2,17 @@ import React, { useReducer } from 'react'
 import { Text, View, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import AuthButton from '@/components/auth/AuthButton';
+import { useRouter } from 'expo-router';
 function SignInScreen() {
+    const router = useRouter();
     const [localState, setLocalState] = useReducer(
         (
             state: {
                 username: string;
                 password: string;
             },
-            action: { type: string; payload: any }) => {
+            action: { type: string; payload: any }
+        ) => {
             switch (action.type) {
                 case 'SET_USERNAME':
                     return { ...state, username: action.payload };
@@ -76,10 +79,19 @@ function SignInScreen() {
                 <View className='w-full flex items-end my-5'>
                     <Text className='text-sm text-secondary'>Forgot Password?</Text>
                 </View>
-                <View className='w-full flex'>
+                <View className='w-full'>
                     <AuthButton
                         type='Login'
                         authPayload={{ username: localState.username, password: localState.password }} />
+                </View>
+                <View className='w-full flex flex-row items-center justify-center gap-2'>
+                    <Text className='text-sm text-white'>Don't have an account?</Text>
+                    <Text
+                        className='text-sm text-secondary'
+                        onPress={() => router.replace("/(auth)/sign-up")}
+                    >
+                        Register Now
+                    </Text>
                 </View>
             </View>
         </TouchableWithoutFeedback>

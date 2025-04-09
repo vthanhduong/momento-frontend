@@ -3,22 +3,20 @@ import "react-native-gesture-handler";
 import "tailwindcss/tailwind.css";
 import {
   DarkTheme,
-  DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, usePathname, useRouter } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 
-import { useColorScheme } from "@hooks/useColorScheme";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import Header from "@/components/layouts/Header";
-import Footer from "@/components/layouts/Footer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthProvider from "@/providers/AuthProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -43,6 +41,25 @@ export default function RootLayout() {
         <SafeAreaView className="h-full">
           <AuthProvider>
             <ThemedLayout />
+            <Toast
+              position="top"
+              visibilityTime={1000}
+              topOffset={50}
+              config={{
+                success: ({ text1, text2 }) => (
+                  <View style={{ backgroundColor: '#CCFF99', padding: 12, borderRadius: 8 }}>
+                    <Text style={{ color: 'black' }}>{text1}</Text>
+                    {text2 && <Text style={{ color: 'white' }}>{text2}</Text>}
+                  </View>
+                ),
+                error: ({ text1, text2 }) => (
+                  <View style={{ backgroundColor: '#ef4444', padding: 12, borderRadius: 8 }}>
+                    <Text style={{ color: 'white' }}>{text1}</Text>
+                    {text2 && <Text style={{ color: 'white' }}>{text2}</Text>}
+                  </View>
+                ),
+              }}
+            />
           </AuthProvider>
         </SafeAreaView>
       </ThemeProvider>
@@ -52,8 +69,6 @@ export default function RootLayout() {
 
 function ThemedLayout() {
   const pathname = usePathname();
-  const authpath = ["/sign-in", "/sign-up"];
-  const isAuthPage = authpath.includes(pathname);
   console.log(pathname);
   return (
     <View className="flex flex-col h-full ">

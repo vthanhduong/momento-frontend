@@ -1,9 +1,10 @@
-import { login } from "@/api/auth"
+import { login, register } from "@/api/auth"
 import { useAuth } from "@/providers/AuthProvider"
 import { Button, color } from "@rneui/base"
 import { useRouter } from "expo-router"
 import { useReducer } from "react"
 import { StyleSheet, View } from "react-native"
+import Toast from "react-native-toast-message";
 
 type LoginPayload = {
     username: string,
@@ -11,7 +12,7 @@ type LoginPayload = {
 }
 
 type SignUpPayload = {
-    email: string,
+    // email: string,
     username: string,
     password: string
 }
@@ -69,17 +70,48 @@ const AuthButton = ({
             console.log("okela bro", res);
             // set token for AuthProviders
             setAuthData({ token: res.data.token, username: '', avatar_url: null, gmail: null, loading: false });
+            Toast.show({
+                type: 'success',
+                text1: 'Welcome to momento'
+            })
             router.replace("/");
-
         }
         else {
             console.log("no okela bro", res);
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid'
+            })
         }
         setButtonState({ type: 'SET_LOADING', payload: false });
     }
 
     const handleSignUp = async () => {
-        console.log("Sign Up bra");
+        setButtonState({ type: 'SET_LOADING', payload: true });
+        setAuthData({ token: '', username: '', avatar_url: null, gmail: null, loading: true });
+        const payload = {
+            username: authPayload.username.trim(),
+            password: authPayload.password.trim()
+        }
+        console.log("Hello", payload);
+
+        const res = await register(payload);
+        if (res?.status == 'success') {
+            console.log("okela bro", res);
+            Toast.show({
+                type: 'success',
+                text1: 'Your account has been created'
+            })
+            router.replace("/(auth)/sign-in");
+        }
+        else {
+            console.log("no okela bro", res);
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid'
+            })
+        }
+        setButtonState({ type: 'SET_LOADING', payload: false });
     }
 
     const handleAuth = async () => {
@@ -100,10 +132,8 @@ const AuthButton = ({
     const styles = StyleSheet.create({
         button: {
             width: "100%",
-            borderRadius: 8,
-            backgroundColor: buttonState.bgColor,
+            backgroundColor: buttonState.bgColor
         },
-
     })
     return (
         <>

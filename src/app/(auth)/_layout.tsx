@@ -11,8 +11,14 @@ export default function AuthLayout() {
             <View className="flex-1">
                 <View className="flex-1 bg-black">
                     <Stack screenOptions={{ headerShown: false }}>
-                        <Stack.Screen name="sign-in" options={{ title: "Sign In" }} />
-                        <Stack.Screen name="sign-up" options={{ title: "Sign Up" }} />
+                        <Stack.Screen
+                            name="sign-in"
+                            options={{ title: "Sign In", animation: 'slide_from_left' }}
+                        />
+                        <Stack.Screen
+                            name="sign-up"
+                            options={{ title: "Sign Up" }}
+                        />
                     </Stack>
                 </View>
             </View>
