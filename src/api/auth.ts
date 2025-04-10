@@ -1,12 +1,14 @@
 import axios from "axios";
 
-const url = `${process.env.EXPO_PUBLIC_API_BASE_URL}auth`;
+const url = `${process.env.EXPO_PUBLIC_API_BASE_URL}/auth`;
+
 
 export const login = async (payload: {
     username: string;
     password: string;
 }) => {
     try {
+        console.log("evvvvv", url);
         const { username, password } = payload;
         const login_url = `${url}/login`;
 
@@ -41,6 +43,8 @@ export const register = async (
     }
 ) => {
     try {
+        console.log("evvvvv", url);
+
         const { username, password } = payload;
         const login_url = `${url}/register`;
         const res = await axios.post(login_url, {
@@ -52,6 +56,9 @@ export const register = async (
         let errorMessage = 'An unknown error occurred';
         if (axios.isAxiosError(error) && error.response) {
             switch (error.status) {
+                case 400:
+                    errorMessage = error.message;
+                    break;
                 case 500:
                     errorMessage = "Server error";
                     break;
