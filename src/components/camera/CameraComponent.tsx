@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   Image,
   Button,
   Dimensions,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import {
   CameraView,
@@ -17,48 +19,72 @@ import {
   CameraMode,
 } from "expo-camera";
 import Icon from "react-native-vector-icons/FontAwesome6";
-import { Link, useRouter } from "expo-router";
+import { Link, useNavigation, useRouter } from "expo-router";
+
+import HeaderSavePhoto from "../layouts/HeaderSavePhoto";
+import ButtonGroupDashboard from "../button/ButtonGroupDashboard";
 import LastPicture from "../photo/LastPicture";
+import CameraFrameMoment from "./CameraFrameMoment";
+import ButtonGroupUploadMoment from "../button/ButtonGroupUploadMoment";
+import Header from "../layouts/Header";
 
 export default function CameraComponent() {
-  const router = useRouter();
+  const navigation = useNavigation();
+
+  //permission camera
   const [permission, requestPermission] = useCameraPermissions();
-  const screenWidth = Dimensions.get("window").width; // Lấy chiều rộng màn hình
-  const squareSize = screenWidth;
+  const squareSize = Dimensions.get("window").width; // Lấy chiều rộng màn hình
+
+  //mode camera
   const [facing, setFacing] = useState<CameraType>("front");
   const [flash, setFlash] = useState<FlashMode>("off");
   const [mode, setMode] = useState<CameraMode>("picture");
   const cameraRef = useRef<CameraView>(null);
   const [picture, setPicture] = useState<string | null>(null);
 
-  const toggleFacing = () => {
+  //set content and upload if picture exist
+  const [content, setContent] = useState<string>("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const onContentChange = useCallback((text: string) => {
+    setContent(text);
+  }, []);
+
+  const onSelectionChange = useCallback((ids: Array<string>) => {
+    setSelectedIds(ids);
+  }, []);
+
+  //functions of camera
+  const toggleFacing = useCallback((): void => {
     setFacing((current) => (current === "front" ? "back" : "front"));
-  };
+  }, []);
 
-  const toggleFlash = () => {
+  const toggleFlash = useCallback((): void => {
     setFlash((current) => (current === "off" ? "on" : "off"));
-  };
+  }, []);
 
-  const toggleMode = () => {
+  const toggleMode = useCallback((): void => {
     setMode((current) => (current === "picture" ? "video" : "picture"));
-  };
+  }, []);
 
-  const takePicture = async () => {
+  const takePicture = useCallback(async (): Promise<void> => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
       if (photo) {
-        // setPicture(photo.uri);
-        router.push({
-          pathname: "/(user)/(photo)",
-          params: { photo: photo.uri },
+        setPicture(photo.uri);
+        navigation.setOptions({
+          header: () => <HeaderSavePhoto photo={photo.uri} />,
         });
       }
     }
-  };
+  }, []);
 
-  const cancelPicture = () => {
+  const cancelPicture = useCallback((): void => {
     setPicture(null);
-  };
+    navigation.setOptions({
+      header: () => <Header />,
+    });
+  }, []);
 
   return (
     <View className="flex-col space-y-10">
@@ -76,34 +102,39 @@ export default function CameraComponent() {
             mirror={true}
           ></CameraView>
         ) : (
-          <Image
-            source={{ uri: picture }}
-            style={{ width: squareSize, height: squareSize }}
-            className="rounded-[40px]" // Bo tròn 40px
-          />
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View className="w-full">
+              <CameraFrameMoment
+                photo={picture}
+                screenWidth={squareSize}
+                content={content}
+                onContentChange={onContentChange}
+              />
+            </View>
+          </TouchableWithoutFeedback>
         )}
       </View>
-      <View className=" w-full flex-row justify-between items-center px-14 ">
-        <TouchableOpacity onPress={toggleFlash}>
-          <Icon
-            name="bolt"
-            size={35}
-            color={flash === "on" ? "yellow" : "white"}
+
+      {/* Button group camera */}
+      {!picture ? (
+        <View className="w-full">
+          <ButtonGroupDashboard
+            flash={flash}
+            toggleFlash={toggleFlash}
+            toggleFacing={toggleFacing}
+            takePicture={takePicture}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-primary rounded-full p-1"
-          onPress={takePicture}
-        >
-          <Text className="w-20 h-20 bg-white rounded-full border-[4px] border-black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={toggleFacing}>
-          <Icon name="rotate" size={35} color="white" />
-        </TouchableOpacity>
-      </View>
-      <View className="w-full flex-row justify-center items-center">
-        <LastPicture />
-      </View>
+        </View>
+      ) : (
+        <View className="w-full">
+          <ButtonGroupUploadMoment
+            screenWidth={squareSize}
+            cancelPicture={cancelPicture}
+            selectedIds={selectedIds}
+            onSelectedIdsChange={onSelectionChange}
+          />
+        </View>
+      )}
     </View>
   );
 }

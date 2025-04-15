@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useState } from "react";
 import { FlatList, View } from "react-native";
 import ShareItemComponent from "./ShareItemComponent";
+import { ShareItemData } from "@/props/type";
 
 const ShareListsComponent = ({
   data,
@@ -16,9 +17,19 @@ const ShareListsComponent = ({
   const toggleItem = useCallback(
     (id: string) => {
       setSelectedIds((prev) => {
-        const newItem = prev.includes(id)
-          ? prev.filter((item) => item !== id)
-          : [...prev, id];
+        let newItem: string[] = [];
+        if (id === "0") {
+          newItem = prev.includes(id) ? [] : [id];
+        } else {
+          const filtered = prev.filter((item) => item !== "0");
+
+          newItem = filtered.includes(id)
+            ? filtered.filter((item) => item !== id)
+            : [...filtered, id];
+        }
+        // const newItem = prev.includes(id)
+        //   ? prev.filter((item) => item !== id)
+        //   : [...prev, id];
         onSelectionChange(newItem);
         return newItem;
       });
