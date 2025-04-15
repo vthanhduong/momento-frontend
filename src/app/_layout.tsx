@@ -68,8 +68,6 @@ export default function RootLayout() {
 }
 
 function ThemedLayout() {
-  const pathname = usePathname();
-  console.log(pathname);
   return (
     <View className="flex flex-col h-full ">
       <View className="flex-1">

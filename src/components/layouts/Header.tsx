@@ -66,7 +66,9 @@ const Header = () => {
 const styles = StyleSheet.create({
   bgSheeet: {
     backgroundColor: "#202020",
-    height: "93%"
+    height: "90%",
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30
   },
 })
 

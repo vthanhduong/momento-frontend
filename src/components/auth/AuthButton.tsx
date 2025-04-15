@@ -2,9 +2,10 @@ import { login, register } from "@/api/auth"
 import { useAuth } from "@/providers/AuthProvider"
 import { Button, color } from "@rneui/base"
 import { useRouter } from "expo-router"
-import { useReducer } from "react"
+import { useReducer, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import Toast from "react-native-toast-message";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LoginPayload = {
     username: string,
@@ -12,7 +13,6 @@ type LoginPayload = {
 }
 
 type SignUpPayload = {
-    // email: string,
     username: string,
     password: string
 }
@@ -26,15 +26,13 @@ const AuthButton = ({
     }) => {
 
     const router = useRouter();
-    const { setAuthData } = useAuth();
-
-
+    const { authData, setAuthData } = useAuth();
     const [buttonState, setButtonState] = useReducer(
         (
             state: {
                 loading: boolean,
                 bgColor: string,
-                txtColor: string
+                txtColor: string,
             },
             action: { type: string; payload: any }) => {
             switch (action.type) {
@@ -51,14 +49,14 @@ const AuthButton = ({
         {
             loading: false,
             bgColor: '#181B24',
-            txtColor: 'white',
+            txtColor: 'white'
         }
     );
 
 
     const handleLogin = async () => {
         setButtonState({ type: 'SET_LOADING', payload: true });
-        setAuthData({ token: '', username: '', avatar_url: null, gmail: null, loading: true });
+        setAuthData({ token: '', nickname: '', avatar: null, error: null, loading: true });
         const payload = {
             username: authPayload.username.trim(),
             password: authPayload.password.trim()
@@ -66,10 +64,18 @@ const AuthButton = ({
         console.log("Hello", payload);
 
         const res = await login(payload);
-        if (res?.status == 'success') {
+        if (res?.status == 'authorized') {
             console.log("okela bro", res);
-            // set token for AuthProviders
-            setAuthData({ token: res.data.token, username: '', avatar_url: null, gmail: null, loading: false });
+            // Save token in AuthProvider and AsyncStorage
+            setAuthData({
+                token: res?.data?.token,
+                nickname: res?.data?.nickname,
+                avatar: res?.data?.avatar,
+                error: null,
+                loading: false
+            });
+            await AsyncStorage.setItem('authToken', res?.data?.token);
+
             Toast.show({
                 type: 'success',
                 text1: 'Welcome to momento'
@@ -78,17 +84,30 @@ const AuthButton = ({
         }
         else {
             console.log("no okela bro", res);
-            Toast.show({
-                type: 'error',
-                text1: 'Invalid'
-            })
+            if (res?.status == 401) {
+                Toast.show({
+                    type: 'error',
+                    text1: res?.message
+                })
+            }
+            else {
+                const usernameError = res.errors.find((err: any) => err.path == "username");
+                const passwordError = res.errors.find((err: any) => err.path == "password");
+                setAuthData({
+                    ...authData,
+                    error: {
+                        username: usernameError?.msg || '',
+                        password: passwordError?.msg || '',
+                    }
+                })
+            }
         }
         setButtonState({ type: 'SET_LOADING', payload: false });
     }
 
     const handleSignUp = async () => {
         setButtonState({ type: 'SET_LOADING', payload: true });
-        setAuthData({ token: '', username: '', avatar_url: null, gmail: null, loading: true });
+        setAuthData({ token: '', nickname: '', avatar: null, error: null, loading: true });
         const payload = {
             username: authPayload.username.trim(),
             password: authPayload.password.trim()
