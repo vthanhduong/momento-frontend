@@ -11,8 +11,7 @@ import {
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import * as MediaLibrary from "expo-media-library";
 import { Download } from "lucide-react-native";
-const HeaderSavePhoto = () => {
-  const { photo } = useLocalSearchParams() as { photo: string };
+const HeaderSavePhoto = ({ photo }: { photo: string }) => {
   const [loading, setLoading] = useState(false);
   const [permission, requestPermission] = MediaLibrary.usePermissions();
   const savePhoto = async (photoUri: string) => {

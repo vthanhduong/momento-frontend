@@ -1,10 +1,10 @@
-type ShareItemData = {
+export type ShareItemData = {
   id: number;
   src?: string;
   name: string;
 };
 
-type ShareItemProps = {
+export type ShareItemProps = {
   item: ShareItemData;
   onPress: () => void;
   isSelected: boolean;
