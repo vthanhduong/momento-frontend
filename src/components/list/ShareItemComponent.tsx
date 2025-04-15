@@ -1,3 +1,4 @@
+import { ShareItemProps } from "@/props/type";
 import React, { memo } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
