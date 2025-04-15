@@ -70,11 +70,13 @@ export const register = async (
     } catch (error) {
         let errorMessage = 'An unknown error occurred';
         let status = 0;
+        let errors : any = [];
         if (axios.isAxiosError(error) && error.response) {
             switch (error.status) {
                 case 400:
-                    errorMessage = error.message;
+                    errorMessage = error.response.data.message || "Validation errors";
                     status = error.status;
+                    errors = error.response.data.data?.errors || []; 
                     break;
                 case 500:
                     errorMessage = "Server error";
@@ -88,7 +90,8 @@ export const register = async (
         return {
             success: false,
             message: errorMessage,
-            status: status
+            status: status,
+            errors: errors
         }
     }
 }

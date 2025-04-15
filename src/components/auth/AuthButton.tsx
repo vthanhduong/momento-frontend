@@ -125,9 +125,14 @@ const AuthButton = ({
         }
         else {
             console.log("no okela bro", res);
-            Toast.show({
-                type: 'error',
-                text1: 'Invalid'
+            const usernameError = res.errors.find((err: any) => err.path == "username");
+            const passwordError = res.errors.find((err: any) => err.path == "password");
+            setAuthData({
+                ...authData,
+                error: {
+                    username: usernameError?.msg || '',
+                    password: passwordError?.msg || '',
+                }
             })
         }
         setButtonState({ type: 'SET_LOADING', payload: false });

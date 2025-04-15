@@ -13,7 +13,8 @@ type AuthData = {
 type AuthContextType = {
     authData: AuthData;
     setAuthData: React.Dispatch<React.SetStateAction<AuthData>>;
-    handleRefreshToken: () => void
+    handleRefreshToken: () => void,
+    clearError: () => void
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,10 +71,13 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
         }
     };
 
+    const clearError = () => {
+        setAuthData({ ...authData, error: null });
+    }
 
 
     return (
-        <AuthContext.Provider value={{ authData, setAuthData, handleRefreshToken }}>
+        <AuthContext.Provider value={{ authData, setAuthData, handleRefreshToken, clearError }}>
             {children}
         </AuthContext.Provider>
     );

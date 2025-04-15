@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 function SignInScreen() {
     const router = useRouter();
-    const { authData } = useAuth();
+    const { authData, clearError } = useAuth();
     const [localState, setLocalState] = useReducer(
         (
             state: {
@@ -47,6 +47,7 @@ function SignInScreen() {
         if (authData.error != null) {
             setLocalState({ type: 'SET_ERROR', payload: authData.error })
             console.log("Error em oi", authData.error);
+            clearError();
             setTimeout(() => {
                 setLocalState({ type: 'SET_ERROR', payload: null })
             }, 2000);
@@ -84,7 +85,7 @@ function SignInScreen() {
 
                 />
                 {
-                    <Text className='w-full text-red-500'>{localState.error?.username}</Text>
+                    <Text className='w-full text-red-500 px-3'>{localState.error?.username}</Text>
                 }
                 <TextInput
                     placeholder="Password"
@@ -96,7 +97,7 @@ function SignInScreen() {
                     secureTextEntry
                 />
                 {
-                    <Text className='w-full text-red-500'>{localState.error?.password}</Text>
+                    <Text className='w-full text-red-500 px-3'>{localState.error?.password}</Text>
                 }
                 <View className='w-full flex items-end my-5'>
                     <Text className='text-sm text-secondary'>Forgot Password?</Text>
