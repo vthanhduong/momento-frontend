@@ -1,16 +1,19 @@
 import AuthButton from '@/components/auth/AuthButton';
+import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'expo-router';
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import { Keyboard, Text, View, TouchableWithoutFeedback, TextInput } from 'react-native';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 
 function SignUpScreen() {
     const router = useRouter();
+    const { authData, clearError } = useAuth();
     const [localState, setLocalState] = useReducer(
         (
             state: {
                 username: string,
-                password: string
+                password: string,
+                error: any
             },
             action: { type: string, payload: any }
         ) => {
@@ -19,13 +22,16 @@ function SignUpScreen() {
                     return { ...state, username: action.payload };
                 case 'SET_PASSWORD':
                     return { ...state, password: action.payload };
+                case 'SET_ERROR':
+                    return { ...state, error: action.payload };
                 default:
                     return state;
             }
         },
         {
             username: '',
-            password: ''
+            password: '',
+            error: null
         }
     )
     const handleInput = (type: string, value: string) => {
@@ -36,6 +42,19 @@ function SignUpScreen() {
             setLocalState({ type: 'SET_PASSWORD', payload: value });
         }
     }
+
+
+    useEffect(() => {
+        if (authData.error != null) {
+            setLocalState({ type: 'SET_ERROR', payload: authData.error })
+            console.log("Error em oi", authData.error);
+            clearError();
+            setTimeout(() => {
+                setLocalState({ type: 'SET_ERROR', payload: null })
+            }, 2000);
+        }
+    }, [authData.error])
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View className='flex-1 h-full w-full gap-3 px-10 pt-8'>
@@ -51,6 +70,9 @@ function SignUpScreen() {
                     maxLength={50}
                     onChangeText={(text) => handleInput('username', text)}
                 />
+                {
+                    <Text className='w-full text-red-500 px-3'>{localState.error?.username}</Text>
+                }
                 <TextInput
                     placeholder="Password"
                     className='w-full h-16 bg-black p-3 border border-b-gray-800 text-white text-base'
@@ -60,6 +82,9 @@ function SignUpScreen() {
                     secureTextEntry
                     onChangeText={(text) => handleInput('password', text)}
                 />
+                {
+                    <Text className='w-full text-red-500 px-3'>{localState.error?.password}</Text>
+                }
                 <View className='w-full pt-8'>
                     <AuthButton
                         type='Register'

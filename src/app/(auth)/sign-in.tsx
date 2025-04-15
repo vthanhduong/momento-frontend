@@ -1,15 +1,18 @@
-import React, { useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import { Text, View, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import AuthButton from '@/components/auth/AuthButton';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/providers/AuthProvider';
 function SignInScreen() {
     const router = useRouter();
+    const { authData, clearError } = useAuth();
     const [localState, setLocalState] = useReducer(
         (
             state: {
                 username: string;
                 password: string;
+                error: any
             },
             action: { type: string; payload: any }
         ) => {
@@ -18,6 +21,8 @@ function SignInScreen() {
                     return { ...state, username: action.payload };
                 case 'SET_PASSWORD':
                     return { ...state, password: action.payload };
+                case 'SET_ERROR':
+                    return { ...state, error: action.payload };
                 default:
                     return state;
             }
@@ -25,6 +30,7 @@ function SignInScreen() {
         {
             username: '',
             password: '',
+            error: null
         }
     );
 
@@ -36,6 +42,17 @@ function SignInScreen() {
             setLocalState({ type: 'SET_PASSWORD', payload: value });
         }
     }
+
+    useEffect(() => {
+        if (authData.error != null) {
+            setLocalState({ type: 'SET_ERROR', payload: authData.error })
+            console.log("Error em oi", authData.error);
+            clearError();
+            setTimeout(() => {
+                setLocalState({ type: 'SET_ERROR', payload: null })
+            }, 2000);
+        }
+    }, [authData.error])
 
 
     return (
@@ -67,6 +84,9 @@ function SignInScreen() {
                     maxLength={50}
 
                 />
+                {
+                    <Text className='w-full text-red-500 px-3'>{localState.error?.username}</Text>
+                }
                 <TextInput
                     placeholder="Password"
                     className='w-full h-16 bg-black p-3 border border-b-gray-800 text-white text-base'
@@ -76,6 +96,9 @@ function SignInScreen() {
                     maxLength={50}
                     secureTextEntry
                 />
+                {
+                    <Text className='w-full text-red-500 px-3'>{localState.error?.password}</Text>
+                }
                 <View className='w-full flex items-end my-5'>
                     <Text className='text-sm text-secondary'>Forgot Password?</Text>
                 </View>

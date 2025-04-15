@@ -28,13 +28,13 @@ const SearchFriend = () => {
     return (
         <>
             <View className='w-full flex items-center justify-center gap-4'>
-                <View className='w-full flex flex-row h-12 gap-3 bg-neutral-600 rounded-2xl'>
+                <View className='w-full flex flex-row h-12 justify-center items-center bg-neutral-600 rounded-2xl'>
                     <FontAwesome6Icon
                         name='magnifying-glass'
-                        size={25}
+                        size={20}
                         color={"white"}
                     />
-                    <Text className='text-white text-lg font-semibold'>Add a new friend</Text>
+                    <Text className='text-white text-sm font-semibold ml-3'>Add a new friend</Text>
                 </View>
                
                 <View className='w-full flex flex-row gap-3 items-center'>
